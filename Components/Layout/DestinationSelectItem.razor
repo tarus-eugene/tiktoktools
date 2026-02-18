@@ -1,0 +1,33 @@
+﻿<div class="my-2 flex flex-row justify-between rounded-md bg-slate-800 p-2 outline outline-white/35">
+    <div class="space-y-1" >
+        <p class="text-sm font-thin text-white/65">@Title</p>
+        <p>@Path</p>
+    </div>
+
+    <button class="rounded-md px-3 py-1 text-sky-400 hover:bg-sky-400 hover:text-white" @onclick="HandleEdit">
+        Edit
+    </button>
+</div>
+
+@code {
+    [Inject] public IFolderPicker folderPicker { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "No Title";
+
+    [Parameter]
+    public string? Path { get; set; }
+
+    private async Task HandleEdit()
+    {
+        try
+        {
+            var result = await folderPicker.PickAsync(CancellationToken.None);
+
+            if (result.Folder == null)
+            {
+                
+            }
+        }
+    }
+}

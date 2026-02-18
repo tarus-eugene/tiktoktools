@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+html {
+  height: 100%;
+  font-family: Inter;
+  font-feature-settings: 'cv11';
+}

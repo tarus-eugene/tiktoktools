@@ -10,13 +10,22 @@
 </div>
 
 @code {
-    [Inject] public IFolderPicker folderPicker { get; set; }
+    [Inject] private IFolderPicker folderPicker { get; set; }
+    [Inject] private IConfigService configService { get; set; }
 
     [Parameter]
     public string Title { get; set; } = "No Title";
 
     [Parameter]
     public string? Path { get; set; }
+
+    [Parameter, EditorRequired]
+    public ConfigParameter parameter { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdatePathDisplay();
+    }
 
     private async Task HandleEdit()
     {
@@ -26,8 +35,56 @@
 
             if (result.Folder == null)
             {
-                
+                throw new DirectoryNotFoundException();
             }
+            else
+            {
+                configService.SaveConfig(GetConfig(result.Folder.Path));
+                await UpdatePathDisplay();
+            }
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+    private ApplicationConfig GetConfig(string destinationPath)
+    {
+        switch (parameter)
+        {
+            case ConfigParameter.TEMP:
+                return new ApplicationConfig
+                    {
+                        TempFolderPath = destinationPath
+                    };
+            case ConfigParameter.OUTPUT:
+                return new ApplicationConfig
+                    {
+                        OutputFolderPath = destinationPath
+                    };
+            default:
+                return null;
+        }
+    }
+
+    private async Task UpdatePathDisplay(){
+        var config = await configService.GetConfig();
+        
+        switch (parameter)
+        {
+            case ConfigParameter.TEMP:
+                Path = config.TempFolderPath;
+                StateHasChanged();
+                break;
+
+            case ConfigParameter.OUTPUT:
+                Path = config.OutputFolderPath;
+                StateHasChanged();
+                break;
+            default:
+                Path = "No Value";
+                break;
         }
     }
 }

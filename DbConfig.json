@@ -1,0 +1,6 @@
+{
+  "ConnectionString":
+  {
+    "Default": "Data Source=persistence.db"
+  }
+}

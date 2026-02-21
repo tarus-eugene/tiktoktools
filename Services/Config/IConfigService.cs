@@ -5,7 +5,7 @@ using TikTokTools.Models;
 
 namespace TikTokTools.Services.Config
 {
-    internal interface IConfigService
+    public interface IConfigService
     {
         Task<ApplicationConfig> GetConfig();
         Task<ApplicationConfig> SaveConfig(ApplicationConfig newConfig);

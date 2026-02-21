@@ -6,10 +6,11 @@ using TikTokTools.Models;
 
 namespace TikTokTools.Data
 {
-    internal class Context : DbContext
+    public class Context : DbContext
     {
         public Context(DbContextOptions<Context> options) : base(options) { }
-        public DbSet<ApplicationConfig> AppConfig;
+        public DbSet<ApplicationConfig> AppConfig { get; set; }
+
         public ApplicationConfig  defaultConfig = new ApplicationConfig
                 {
                     TempFolderPath = @"C:\TikTokTools\Temp",
@@ -27,13 +28,6 @@ namespace TikTokTools.Data
 
             modelBuilder.Entity<ApplicationConfig>()
                 .HasData(defaultConfig);
-        }
-
-        public void SeedData()
-        {
-
-            AppConfig.Add(defaultConfig);
-            this.SaveChanges();
         }
     }
 }

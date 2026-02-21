@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="../TikTokToolsTests/TikTokToolsTests.csproj" Id="566ccac2-2b74-4236-9a45-0195b7823d34" />
   <Project Path="TikTokTools.csproj">
     <Deploy Solution="Debug|*" />
   </Project>

@@ -93,6 +93,9 @@
         <Generator>TextTemplatingFileGenerator</Generator>
         <LastGenOutput>Model1.Context.cs</LastGenOutput>
       </None>
+      <None Update="persistence.db">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
     <ItemGroup>

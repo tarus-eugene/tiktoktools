@@ -1,7 +1,7 @@
 ﻿<div class="my-2 flex flex-row justify-between rounded-md bg-slate-800 p-2 outline outline-white/35">
     <div class="space-y-1" >
         <p class="text-sm font-thin text-white/65">@Title</p>
-        <p>@Path</p>
+        <p>@path</p>
     </div>
 
     <button class="rounded-md px-3 py-1 text-sky-400 hover:bg-sky-400 hover:text-white" @onclick="HandleEdit">
@@ -16,8 +16,7 @@
     [Parameter]
     public string Title { get; set; } = "No Title";
 
-    [Parameter]
-    public string? Path { get; set; }
+    public string? path;
 
     [Parameter, EditorRequired]
     public ConfigParameter parameter { get; set; }
@@ -25,6 +24,7 @@
     protected override async Task OnInitializedAsync()
     {
         await UpdatePathDisplay();
+        StateHasChanged();
     }
 
     private async Task HandleEdit()
@@ -39,8 +39,9 @@
             }
             else
             {
-                configService.SaveConfig(GetConfig(result.Folder.Path));
+                await configService.SaveConfig(BuildUpdateConfig(result.Folder.Path));
                 await UpdatePathDisplay();
+                StateHasChanged();
             }
         }
         catch(Exception e)
@@ -49,7 +50,7 @@
         }
     }
 
-    private ApplicationConfig GetConfig(string destinationPath)
+    private ApplicationConfig BuildUpdateConfig(string destinationPath)
     {
         switch (parameter)
         {
@@ -69,22 +70,29 @@
     }
 
     private async Task UpdatePathDisplay(){
-        var config = await configService.GetConfig();
-        
-        switch (parameter)
+        try
         {
-            case ConfigParameter.TEMP:
-                Path = config.TempFolderPath;
-                StateHasChanged();
-                break;
+            var config = await configService.GetConfig();
 
-            case ConfigParameter.OUTPUT:
-                Path = config.OutputFolderPath;
-                StateHasChanged();
-                break;
-            default:
-                Path = "No Value";
-                break;
+            switch (parameter)
+            {
+                case ConfigParameter.TEMP:
+                    path = config.TempFolderPath;
+                    break;
+
+                case ConfigParameter.OUTPUT:
+                    path = config.OutputFolderPath;
+                    break;
+                default:
+                    path = "No Value";
+                    break;
+            }
+
         }
+        catch (Exception e)
+        {
+            path = "Error";
+        }
+
     }
 }

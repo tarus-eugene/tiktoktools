@@ -5,10 +5,11 @@ using TikTokTools.Data;
 using TikTokTools.Models;
 using TikTokTools.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace TikTokTools.Services.Config;
 
-internal class ConfigService : IConfigService
+public class ConfigService : IConfigService
 {
     private readonly Context _context;
 
@@ -19,16 +20,14 @@ internal class ConfigService : IConfigService
 
     public async Task<ApplicationConfig> GetConfig()
     {
-        var config = await _context.AppConfig.FindAsync(1);
+        ApplicationConfig? config = await _context.AppConfig.FindAsync(1);
         
         if (config == null)
         {
             throw new NotFoundException("No Value found matching input id");
         }
-        else
-        {
-            return config;
-        }
+
+        return config;
     }
 
     public async Task<ApplicationConfig> SaveConfig(ApplicationConfig newConfig)
@@ -36,9 +35,11 @@ internal class ConfigService : IConfigService
         var config = await GetConfig();
         var updatedConfig = UpdateConfig(newConfig, config);
 
-        await _context.AppConfig.ExecuteDeleteAsync();
+        await _context.AppConfig.Where(e => e.Id == 1).ExecuteDeleteAsync();
 
         await _context.AppConfig.AddAsync(updatedConfig);
+
+        _context.SaveChanges();
 
         return updatedConfig;
     }
@@ -47,12 +48,15 @@ internal class ConfigService : IConfigService
     {
         foreach (var property in typeof(ApplicationConfig).GetProperties())
         {
-            var sourceVal = property.GetValue(source);
-            var targetVal = property.GetValue(target);
-
-            if (sourceVal != null && sourceVal != targetVal)
+            if(property.Name != "Id")
             {
-                property.SetValue(target, sourceVal);
+                var sourceVal = property.GetValue(source);
+                var targetVal = property.GetValue(target);
+
+                if (sourceVal != null && sourceVal != targetVal)
+                {
+                    property.SetValue(target, sourceVal);
+                }
             }
         }
 
